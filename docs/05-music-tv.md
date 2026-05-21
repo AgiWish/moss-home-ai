@@ -5,14 +5,14 @@
 地址：
 
 ```text
-http://192.168.5.8:8096
+http://<NAS_IP>:8096
 ```
 
 当前主要播放器：
 
 ```text
 Apple TV / 电视
-player_id: apfeb2842e85f8
+player_id: <APPLE_TV_PLAYER_ID>
 ```
 
 其他历史目标：
@@ -32,7 +32,7 @@ player_id: apfeb2842e85f8
   -> hass_play_music
   -> media_player.dian_shi_2
   -> PLAYER_ALIASES
-  -> apfeb2842e85f8
+  -> <APPLE_TV_PLAYER_ID>
   -> Music Assistant
   -> Apple TV AirPlay
   -> 索尼电视出声

@@ -24,8 +24,8 @@
 
 ## 当前 NAS 后端
 
-- NAS：`192.168.5.8`
-- SSH：`ssh -p 223 root@192.168.5.8`
+- NAS：`<NAS_IP>`
+- SSH：`ssh -p <SSH_PORT> root@<NAS_IP>`
 - 小智后端目录：`/volume1/docker/xiaozhi-server`
 - 小智后端容器：
   - `xiaozhi-esp32-server`

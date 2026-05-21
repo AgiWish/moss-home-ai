@@ -18,14 +18,14 @@ if TYPE_CHECKING:
 TAG = __name__
 logger = setup_logging()
 
-MA_BASE_URL = "http://192.168.5.8:8096"
+MA_BASE_URL = "http://<NAS_IP>:8096"        # 替换为你的 NAS 地址
 MA_USERNAME = "<MA_USERNAME>"
 MA_PASSWORD = "<MA_PASSWORD>"
 
-DEFAULT_MUSIC_PLAYER = "apfeb2842e85f8"
-LEBO_AIRPLAY_PLAYER = "ap56d0040bdeb3"
-TV_UNIVERSAL_PLAYER = "up7b227e0ddfbe2b27f5d07c22df10ea3a"
-FALLBACK_MUSIC_PLAYER = "media_player.xiaomi_oh2p_1813_play_control"
+DEFAULT_MUSIC_PLAYER = "<APPLE_TV_PLAYER_ID>"     # Music Assistant 中 Apple TV 的 player id
+LEBO_AIRPLAY_PLAYER = "<LEBO_AIRPLAY_PLAYER_ID>"
+TV_UNIVERSAL_PLAYER = "<TV_UNIVERSAL_PLAYER_ID>"
+FALLBACK_MUSIC_PLAYER = "<XIAOMI_SPEAKER_ENTITY>"  # HA 中小米音箱的 entity_id
 TV_MIN_MUSIC_VOLUME = 55
 
 MUSIC_RESOURCE_DIR = "/music_resource"

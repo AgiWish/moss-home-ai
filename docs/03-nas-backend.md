@@ -3,7 +3,7 @@
 ## SSH
 
 ```bash
-ssh -p 223 root@192.168.5.8
+ssh -p <SSH_PORT> root@<NAS_IP>
 ```
 
 进入后先设置 Docker PATH：
@@ -81,7 +81,7 @@ docker logs --since=20m homeassistant 2>&1 \
 
 ```bash
 docker logs --since=20m music-assistant 2>&1 \
-  | grep -Ei 'apfeb2842e85f8|电视|AirPlay|volume|play|stream|error|failed'
+  | grep -Ei '<APPLE_TV_PLAYER_ID>|电视|AirPlay|volume|play|stream|error|failed'
 ```
 
 ## 数据库
@@ -127,7 +127,7 @@ WHERE id IN ('LLM_AliLLM','ASR_Qwen3Flash','VAD_SileroVAD');
 负责音乐：
 
 - 默认 Apple TV / 索尼电视播放。
-- Apple TV MA player id：`apfeb2842e85f8`
+- Apple TV MA player id：`<APPLE_TV_PLAYER_ID>`
 - 备用乐播 AirPlay。
 - 最后 fallback 到小爱音箱。
 - 从 MA 库找歌，找不到再尝试 115 资源缓存。

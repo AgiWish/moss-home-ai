@@ -94,7 +94,7 @@ moss-home-ai/
 ### 1. NAS 后端
 
 ```bash
-ssh -p 223 root@192.168.5.8
+ssh -p <SSH_PORT> root@<NAS_IP>
 cd /volume1/docker/xiaozhi-server
 docker compose restart xiaozhi-esp32-server
 ```
@@ -124,9 +124,9 @@ cp backend-patches/hass_set_state.py   /volume1/docker/xiaozhi-server/patches/
 
 | 服务 | 地址 |
 |------|------|
-| Home Assistant | `http://192.168.5.8:8123` |
-| Music Assistant | `http://192.168.5.8:8096` |
-| Apple TV MA player id | `apfeb2842e85f8` |
+| Home Assistant | `http://<NAS_IP>:8123` |
+| Music Assistant | `http://<NAS_IP>:8096` |
+| Apple TV MA player id | `<APPLE_TV_PLAYER_ID>` |
 
 ---
 
