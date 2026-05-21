@@ -1,6 +1,6 @@
 # 当前状态快照
 
-更新时间：2026-05-21
+更新时间：2026-05-22
 
 ## 当前目标
 
@@ -39,11 +39,38 @@
 
 - Agent ID：`e7f9852050a44bc293f51bf88d1863e0`
 - 名称：小智
-- 当前 LLM：`LLM_AliLLM`
+- 当前 LLM：`LLM_AliLLM`，`model_name=qwen-flash`
 - 当前模型配置方向：语音控制优先快响应，使用短输出。
 - 当前 ASR：`ASR_Qwen3Flash`
 - 当前 TTS：`TTS_EdgeTTS`
 - 当前语音：`zh-CN-YunyangNeural`
+
+## 2026-05-22 模型切换记录
+
+- NAS 数据库中曾将 `LLM_AliLLM` 从 `qwen-flash` 切到 `qwen-plus` 测试。
+- 因家控链路体感变慢，已回滚到 `qwen-flash`。
+- 当前参数：`max_tokens=160`，`temperature=0.0`。
+- 已保留备份模型配置：`LLM_AliLLM_BAK_0522`，其中仍是 `qwen-flash`、`max_tokens=160`、`temperature=0.0`。
+- 已重启 `xiaozhi-esp32-server`。
+- 测试前需要让小智设备重新连接后端，确保拿到新的 agent 配置。
+
+## 2026-05-22 ASR 切换记录
+
+- 曾将当前 Agent 的 ASR 从 `ASR_Qwen3Flash` 切到本地 `ASR_FunASR` 测试。
+- 因设备端出现说完指令后卡住/无回复的表现，已回滚到 `ASR_Qwen3Flash`。
+- `ASR_FunASR` 使用容器内 `models/SenseVoiceSmall`，不需要额外 token。
+- 已创建数据库备份表：`ai_agent_switch_backup_0522`，其中保留切换前 agent 配置。
+- 已重启 `xiaozhi-esp32-server` 和 `xiaozhi-esp32-server-web`，并清理相关 Redis 配置缓存。
+- 测试前需要让小智设备重新连接后端。
+
+## 2026-05-22 家控快路径记录
+
+- 已在 NAS 运行容器的 `core/connection.py` 增加家控快路径。
+- 明确的“打开/关闭 + 已知房间设备”命令会在进入 LLM 前直接调用 Home Assistant。
+- 首批覆盖：书房/客厅/主卧/次卧/阳台空调，书房/主卧/次卧/阳台窗帘，书房/客厅/主卧/次卧/阳台/入户/过道灯，电视。
+- 成功后直接回复“好了”，目标是减少 LLM function call 带来的 3-8 秒等待。
+- 已同步更新 NAS 上的 `hass_set_state.py`，作为未命中快路径时的工具兜底。
+- 豆包 ASR/TTS 当前未切换：数据库中的豆包 `appid/access_token/api_key` 仍为空，需要凭据后才能测试。
 
 ## 已完成修复
 
@@ -61,4 +88,3 @@
 - Apple TV / SenPlayer 目前只能遥控级控制，不能直接按剧名播放。
 - 音乐搜索和缓存链路可用性需要继续验证。
 - 固件 UI 已经过多轮修改，但还需要把最终设计系统稳定下来。
-

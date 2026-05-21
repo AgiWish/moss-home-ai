@@ -13,6 +13,44 @@ logger = setup_logging()
 
 
 ENTITY_ALIASES = {
+    "书房": [
+        "light.mson_ms006_72e5_light",
+        "light.yeelink_lamp22_f8e2_light",
+        "switch.iot_tdq3_793a_switch",
+        "cover.raex_cura01_c1d1_curtain",
+        "climate.211106250460304_climate",
+    ],
+    "书房灯": "light.mson_ms006_72e5_light",
+    "书房主灯": "light.mson_ms006_72e5_light",
+    "书房大灯": "light.mson_ms006_72e5_light",
+    "书房挂灯": "light.yeelink_lamp22_f8e2_light",
+    "书房小灯": "switch.iot_tdq3_793a_switch",
+    "书房灯光": [
+        "light.mson_ms006_72e5_light",
+        "light.yeelink_lamp22_f8e2_light",
+        "switch.iot_tdq3_793a_switch",
+    ],
+    "书房所有灯": [
+        "light.mson_ms006_72e5_light",
+        "light.yeelink_lamp22_f8e2_light",
+        "switch.iot_tdq3_793a_switch",
+    ],
+    "书房窗帘": "cover.raex_cura01_c1d1_curtain",
+    "书房空调": "climate.211106250460304_climate",
+    "room.shufang": [
+        "light.mson_ms006_72e5_light",
+        "light.yeelink_lamp22_f8e2_light",
+        "switch.iot_tdq3_793a_switch",
+        "cover.raex_cura01_c1d1_curtain",
+        "climate.211106250460304_climate",
+    ],
+    "room.shu_fang": [
+        "light.mson_ms006_72e5_light",
+        "light.yeelink_lamp22_f8e2_light",
+        "switch.iot_tdq3_793a_switch",
+        "cover.raex_cura01_c1d1_curtain",
+        "climate.211106250460304_climate",
+    ],
     "light.shu_fang_deng": "light.mson_ms006_72e5_light",
     "light.shufang_deng": "light.mson_ms006_72e5_light",
     "light.shufang_light": "light.mson_ms006_72e5_light",
@@ -127,9 +165,9 @@ def entity_exists(base_url, api_key, entity_id):
         response = requests.get(
             f"{base_url}/api/states/{entity_id}", headers=headers, timeout=5
         )
-    except Exception as exc:
+    except requests.RequestException as exc:
         logger.bind(tag=TAG).warning(f"校验Home Assistant实体失败: {type(exc).__name__}: {exc}")
-        return False
+        return None
     if response.status_code == 200:
         return True
     logger.bind(tag=TAG).warning(
@@ -141,7 +179,7 @@ hass_set_state_function_desc = {
     "type": "function",
     "function": {
         "name": "hass_set_state",
-        "description": "设置homeassistant里设备的状态，包括开关、灯光亮度/颜色/色温、播放器音量/暂停/继续，扫地机器人开始/暂停/停止/回充/定位/房间清扫/吸力设置，以及空调制冷/制热/除湿/送风/自动模式和目标温度",
+        "description": "设置homeassistant里设备的状态，包括开关、灯光亮度/颜色/色温、播放器音量/暂停/继续，扫地机器人开始/暂停/停止/回充/定位/房间清扫/吸力设置，以及空调制冷/制热/除湿/送风/自动模式和目标温度。用户说“关闭书房/打开书房”时 entity_id 填“书房”；用户说“书房灯/书房灯光/书房窗帘/书房空调”时可直接把中文名称填入 entity_id，不要编造不存在的 Home Assistant entity_id。",
         "parameters": {
             "type": "object",
             "properties": {
@@ -179,7 +217,7 @@ hass_set_state_function_desc = {
                 },
                 "entity_id": {
                     "type": "string",
-                    "description": "需要操作的设备id,homeassistant里的entity_id",
+                    "description": "需要操作的设备id或中文别名。可填Home Assistant里的entity_id，也可填中文别名，例如书房、书房灯、书房灯光、书房小灯、书房挂灯、书房窗帘、书房空调。",
                 },
             },
             "required": ["state", "entity_id"],
@@ -222,7 +260,10 @@ def handle_hass_set_state(conn: "ConnectionHandler", entity_id, state):
     action_type = state.get("type")
     if not action_type:
         return "执行失败，缺少动作类型"
-    if not entity_exists(base_url, api_key, entity_id):
+    exists = entity_exists(base_url, api_key, entity_id)
+    if exists is None:
+        return "网络异常，无法连接Home Assistant"
+    if not exists:
         return f"执行失败，找不到设备: {entity_id}"
     domains = entity_id.split(".")
     if len(domains) > 1:
@@ -389,7 +430,11 @@ def handle_hass_set_state(conn: "ConnectionHandler", entity_id, state):
         data = {"entity_id": entity_id, arg: value}
     url = f"{base_url}/api/services/{domain}/{action}"
     headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
-    response = requests.post(url, headers=headers, json=data, timeout=5)  # 设置5秒超时
+    try:
+        response = requests.post(url, headers=headers, json=data, timeout=5)  # 设置5秒超时
+    except requests.RequestException as exc:
+        logger.bind(tag=TAG).warning(f"调用Home Assistant服务失败: {type(exc).__name__}: {exc}")
+        return "网络异常，无法连接Home Assistant"
     logger.bind(tag=TAG).info(
         f"设置状态:{description},url:{url},return_code:{response.status_code}"
     )
